@@ -10,12 +10,12 @@ if (navigator.geolocation) {
     },
     {
         enableHighAccuracy: true,
-        timeout: 500000,
+        timeout: 500000000,
         maximumAge: 0,
     });
 }
 
-const map = L.map("map").setView([0, 0], 16);
+const map = L.map("map").setView([0, 0], 10);
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
     attribution: "Geo-Tracker"
 }).addTo(map);
