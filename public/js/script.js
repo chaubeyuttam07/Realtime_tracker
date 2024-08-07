@@ -1,26 +1,37 @@
 const socket = io();
 
+let shouldAutoCenter = true;
+
 if (navigator.geolocation) {
-    navigator.geolocation.watchPosition((position) => {
-        const { latitude, longitude } = position.coords;
-        socket.emit("send-location", { latitude, longitude });
-    },
-    (error) => {
-        console.log(error);
-    },
-    {
-        enableHighAccuracy: true,
-        // timeout: 900000000000000000000000000000,
-        maximumAge: 0,
-    });
+    navigator.geolocation.watchPosition(
+        (position) => {
+            const { latitude, longitude } = position.coords;
+            socket.emit("send-location", { latitude, longitude });
+        },
+        (error) => {
+            console.error("Geolocation error:", error);
+        },
+        {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0,
+        }
+    );
+} else {
+    console.error("Geolocation is not supported by this browser.");
 }
 
-const map = L.map("map").setView([0, 0], 10);
+const map = L.map("map").setView([0, 0], 16);
+
 L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    attribution: "Geo-Tracker"
+    attribution: "Geo-Tracker",
 }).addTo(map);
 
 const markers = {};
+
+map.on("movestart", () => {
+    shouldAutoCenter = false; // Disable auto-centering when the user starts moving the map
+});
 
 socket.on("current-users", (users) => {
     for (const id in users) {
@@ -36,7 +47,9 @@ socket.on("receive-location", (data) => {
     } else {
         markers[id] = L.marker([latitude, longitude]).addTo(map);
     }
-    map.setView([latitude, longitude]);
+    if (shouldAutoCenter) {
+        map.setView([latitude, longitude], map.getZoom());
+    }
 });
 
 socket.on("user-disconnected", (id) => {
