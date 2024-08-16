@@ -7,5 +7,4 @@ This web application help us to loacate user who are connected to you through th
 
 ![Demo App](/public/screenshort/1.png)
 
-
-![Link to visit App]  <a src="https://realtime-tracker-tfn7.onrender.com/">click here</a>
+![Link to visit App]  (https://realtime-tracker-tfn7.onrender.com/)
